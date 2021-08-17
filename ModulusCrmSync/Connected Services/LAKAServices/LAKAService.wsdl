@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="GetDataSource">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Environment" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetDataSourceResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetDataSourceResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CRMOrgService">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="Environment" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CRMOrgServiceResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CRMOrgServiceResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CRMOrgUsername">
+        <s:complexType />
+      </s:element>
+      <s:element name="CRMOrgUsernameResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CRMOrgUsernameResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CRMOrgPassword">
+        <s:complexType />
+      </s:element>
+      <s:element name="CRMOrgPasswordResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CRMOrgPasswordResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="LogStart">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="jobnavn" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="con" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="LogStartResponse">
+        <s:complexType />
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="GetDataSourceSoapIn">
+    <wsdl:part name="parameters" element="tns:GetDataSource" />
+  </wsdl:message>
+  <wsdl:message name="GetDataSourceSoapOut">
+    <wsdl:part name="parameters" element="tns:GetDataSourceResponse" />
+  </wsdl:message>
+  <wsdl:message name="CRMOrgServiceSoapIn">
+    <wsdl:part name="parameters" element="tns:CRMOrgService" />
+  </wsdl:message>
+  <wsdl:message name="CRMOrgServiceSoapOut">
+    <wsdl:part name="parameters" element="tns:CRMOrgServiceResponse" />
+  </wsdl:message>
+  <wsdl:message name="CRMOrgUsernameSoapIn">
+    <wsdl:part name="parameters" element="tns:CRMOrgUsername" />
+  </wsdl:message>
+  <wsdl:message name="CRMOrgUsernameSoapOut">
+    <wsdl:part name="parameters" element="tns:CRMOrgUsernameResponse" />
+  </wsdl:message>
+  <wsdl:message name="CRMOrgPasswordSoapIn">
+    <wsdl:part name="parameters" element="tns:CRMOrgPassword" />
+  </wsdl:message>
+  <wsdl:message name="CRMOrgPasswordSoapOut">
+    <wsdl:part name="parameters" element="tns:CRMOrgPasswordResponse" />
+  </wsdl:message>
+  <wsdl:message name="LogStartSoapIn">
+    <wsdl:part name="parameters" element="tns:LogStart" />
+  </wsdl:message>
+  <wsdl:message name="LogStartSoapOut">
+    <wsdl:part name="parameters" element="tns:LogStartResponse" />
+  </wsdl:message>
+  <wsdl:portType name="LAKAServicesSoap">
+    <wsdl:operation name="GetDataSource">
+      <wsdl:input message="tns:GetDataSourceSoapIn" />
+      <wsdl:output message="tns:GetDataSourceSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CRMOrgService">
+      <wsdl:input message="tns:CRMOrgServiceSoapIn" />
+      <wsdl:output message="tns:CRMOrgServiceSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CRMOrgUsername">
+      <wsdl:input message="tns:CRMOrgUsernameSoapIn" />
+      <wsdl:output message="tns:CRMOrgUsernameSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="CRMOrgPassword">
+      <wsdl:input message="tns:CRMOrgPasswordSoapIn" />
+      <wsdl:output message="tns:CRMOrgPasswordSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="LogStart">
+      <wsdl:input message="tns:LogStartSoapIn" />
+      <wsdl:output message="tns:LogStartSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="LAKAServicesSoap" type="tns:LAKAServicesSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetDataSource">
+      <soap:operation soapAction="http://tempuri.org/GetDataSource" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CRMOrgService">
+      <soap:operation soapAction="http://tempuri.org/CRMOrgService" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CRMOrgUsername">
+      <soap:operation soapAction="http://tempuri.org/CRMOrgUsername" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CRMOrgPassword">
+      <soap:operation soapAction="http://tempuri.org/CRMOrgPassword" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="LogStart">
+      <soap:operation soapAction="http://tempuri.org/LogStart" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="LAKAServicesSoap12" type="tns:LAKAServicesSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetDataSource">
+      <soap12:operation soapAction="http://tempuri.org/GetDataSource" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CRMOrgService">
+      <soap12:operation soapAction="http://tempuri.org/CRMOrgService" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CRMOrgUsername">
+      <soap12:operation soapAction="http://tempuri.org/CRMOrgUsername" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CRMOrgPassword">
+      <soap12:operation soapAction="http://tempuri.org/CRMOrgPassword" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="LogStart">
+      <soap12:operation soapAction="http://tempuri.org/LogStart" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="LAKAServices">
+    <wsdl:port name="LAKAServicesSoap" binding="tns:LAKAServicesSoap">
+      <soap:address location="http://lakapp.lak.local:8092/LAKAServices/LAKAService.asmx" />
+    </wsdl:port>
+    <wsdl:port name="LAKAServicesSoap12" binding="tns:LAKAServicesSoap12">
+      <soap12:address location="http://lakapp.lak.local:8092/LAKAServices/LAKAService.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
