@@ -57,12 +57,15 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
+    <Compile Include="ModulusData\CRMEntitet.cs" />
     <Compile Include="ModulusData\SyncJob.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Connected Services\LAKAServices\LAKAService.wsdl" />
     <None Include="Connected Services\LAKAServices\ModulusCrmSync.LAKAServices.CRMOrgPasswordResponse.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
