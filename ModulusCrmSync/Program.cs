@@ -27,8 +27,6 @@ namespace ModulusCrmSync
             service = (IOrganizationService)serviceproxy;
             string EntityLookupFieldValue = "";
             #endregion
-
-            string EntityLookupField = "";
                                    
             var CRMSyncJobs = SyncJob.HentSyncJobs();
 
@@ -48,20 +46,18 @@ namespace ModulusCrmSync
                     OracleDataReader dr = cmd.ExecuteReader();
                     while (dr.Read())
                     {
-                        Console.WriteLine("Synkroniserer medlem: "+ dr["id"].ToString() + " med værdi: " + dr["vaerdi"].ToString());
-
-                        EntityLookupField = job.EntityLookupField;                        
-                        EntityLookupFieldValue = dr["id"].ToString();
-                        
-                        QueryByAttribute q_readentity = new QueryByAttribute(job.EntityName)
+                        Console.WriteLine("Synkroniserer medlem: "+ dr["id"].ToString() + " med værdi: " + dr["vaerdi"].ToString());                       
+                        EntityLookupFieldValue = dr["id"].ToString();                        
+                        QueryByAttribute q_readEntity = new QueryByAttribute(job.EntityName)
                         {
                             ColumnSet = new ColumnSet(new string[] { job.EntityLookupField, job.EntityUpdateField })
                         };
-                        q_readentity.Attributes.Add(job.EntityLookupField);
-                        q_readentity.Values.Add(EntityLookupFieldValue);
-                        Entity _entity = service.RetrieveMultiple(q_readentity).Entities.FirstOrDefault();
+                        q_readEntity.Attributes.Add(job.EntityLookupField);
+                        q_readEntity.Values.Add(EntityLookupFieldValue);
+                        Entity _entity = service.RetrieveMultiple(q_readEntity).Entities.FirstOrDefault();
+
                         Type TYP = (_entity.Attributes[job.EntityUpdateField]).GetType();                        
-                        _entity.Attributes[job.EntityUpdateField] = Cast(dr["vaerdi"], TYP); // Convert.ToDouble(dr["vaerdi"]);
+                        _entity.Attributes[job.EntityUpdateField] = Cast(dr["vaerdi"], TYP); 
                         service.Update(_entity);
                     }
                 }

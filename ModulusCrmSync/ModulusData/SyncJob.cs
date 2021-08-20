@@ -21,14 +21,12 @@ namespace ModulusCrmSync.ModulusData
         public static List<SyncJob> HentSyncJobs()
         {
             List<SyncJob> SyncJobList = new List<SyncJob>();
-
             LAKAServicesSoapClient client = new LAKAServicesSoapClient();
             OracleConnection con = new OracleConnection(client.GetDataSource(ConfigurationManager.AppSettings["DataSource"].ToString()));
             {
-                OracleCommand cmd = new OracleCommand("select navn, entitet, entitet_id, felt,felttype, sql_view, entitet_id from CRMSYNC t where aktiv='J'", con);
+                OracleCommand cmd = new OracleCommand("select navn, entitet, entitet_id, felt, sql_view, entitet_id from CRMSYNC t where aktiv='J'", con);
                 con.Open();
                 OracleDataReader dr = cmd.ExecuteReader();
-
                 while (dr.Read())
                 {
                     SyncJob sj = new SyncJob
@@ -36,8 +34,7 @@ namespace ModulusCrmSync.ModulusData
                         SyncJobName = dr["navn"].ToString(),
                         EntityName = dr["entitet"].ToString(),
                         EntityLookupField = dr["entitet_id"].ToString(),
-                        EntityUpdateField = dr["felt"].ToString(),
-                        EntityUpdateFieldType = dr["felttype"],
+                        EntityUpdateField = dr["felt"].ToString(),                        
                         SQL = dr["sql_view"].ToString()
                     };
                     SyncJobList.Add(sj);
