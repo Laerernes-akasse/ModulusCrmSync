@@ -24,7 +24,7 @@ namespace ModulusCrmSync.ModulusData
             LAKAServicesSoapClient client = new LAKAServicesSoapClient();
             OracleConnection con = new OracleConnection(client.GetDataSource(ConfigurationManager.AppSettings["DataSource"].ToString()));
             {
-                OracleCommand cmd = new OracleCommand("select navn, entitet, entitet_id, felt, sql_view, entitet_id from CRMSYNC t where aktiv='J'", con);
+                OracleCommand cmd = new OracleCommand("select navn, entitet, entitet_id, felt, sql_view, entitet_id from CRMSYNC t where aktiv='J' and CRM_SYNC_ID=3", con);
                 con.Open();
                 OracleDataReader dr = cmd.ExecuteReader();
                 while (dr.Read())
