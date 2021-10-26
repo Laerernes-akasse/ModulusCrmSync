@@ -10,8 +10,6 @@ using ModulusCrmSync.ModulusData;
 using Oracle.ManagedDataAccess.Client;
 using System.Configuration;
 using Microsoft.Xrm.Sdk.Metadata;
-
-
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
@@ -23,9 +21,9 @@ namespace ModulusCrmSync
     {
         static void Main(string[] args)
         {
-            #region Variable
+            #region CRMconnection
             LAKAServicesSoapClient client = new LAKAServicesSoapClient();
-            Uri urlcrm = new Uri(client.CRMOrgService("TEST"));
+            Uri urlcrm = new Uri(client.CRMOrgService(ConfigurationManager.AppSettings["OrgService"].ToString()));
             ClientCredentials credentials = new ClientCredentials();
             credentials.Windows.ClientCredential.UserName = client.CRMOrgUsername();
             credentials.Windows.ClientCredential.Password = client.CRMOrgPassword();
@@ -44,59 +42,17 @@ namespace ModulusCrmSync
 
             foreach (SyncJob job in CRMSyncJobs)
             {
-                //Finder den korrekte type å¨feltet i CRM
-                //RetrieveEntityRequest retrieveEntityRequest = new RetrieveEntityRequest
-                //{
-                //    EntityFilters = EntityFilters.All,
-                //    LogicalName = job.EntityName
-                //};
-                //RetrieveEntityResponse retrieveAccountEntityResponse = (RetrieveEntityResponse)service.Execute(retrieveEntityRequest);
-                //EntityMetadata AccountEntity = retrieveAccountEntityResponse.EntityMetadata;
-                //Console.WriteLine("Account entity metadata:");
-                //Console.WriteLine(AccountEntity.SchemaName);
-                //Console.WriteLine(AccountEntity.DisplayName.UserLocalizedLabel.Label);
-                ////Console.WriteLine(AccountEntity.Attributes[job.EntityUpdateField].AttributeType.ToString());
-
-                //object attribute2 = AccountEntity.Attributes[job.EntityUpdateField];
-                //AttributeMetadata a = (AttributeMetadata)attribute2;
-
-                //Console.WriteLine(attribute2.GetType());
                 RetrieveAttributeRequest attributeRequest = new RetrieveAttributeRequest();
                 attributeRequest.EntityLogicalName = job.EntityName;
                 attributeRequest.LogicalName = job.EntityUpdateField;
                 attributeRequest.RetrieveAsIfPublished = false;
-
+                //Finder den korrekte type på feltet
                 RetrieveAttributeResponse attributeResponse =
     (RetrieveAttributeResponse)service.Execute(attributeRequest);
-                Console.WriteLine("Retrieved the attribute {0}.",
-                    attributeResponse.AttributeMetadata.SchemaName);
-
-                Console.WriteLine("With type: " +
-                   attributeResponse.AttributeMetadata.AttributeType);
-
-                //   RetrieveAttributeResponse attributeResponse = new RetrieveAttributeResponse();
-                //   AttributeMetadata attributeMetadata = attributeResponse.AttributeMetadata;
-
-
-                //Console.WriteLine(attributeMetadata.SchemaName);
-
-
-                //foreach (object attribute in AccountEntity.Attributes )
-                //{
-                //    AttributeMetadata a = (AttributeMetadata)attribute;                    
-                //    Console.WriteLine(a.SchemaName);
-                //    Console.WriteLine(a.AttributeType);
-                //    Console.WriteLine(a.AttributeTypeName);
-
-                //}
-
-
-
-
-
 
                 Console.WriteLine("Starter synkronisering af entiteten: " + job.EntityName + " for feltet: " + job.EntityUpdateField);
                 OracleConnection con = new OracleConnection(client.GetDataSource(ConfigurationManager.AppSettings["DataSource"].ToString()));
+                using (con)
                 {
                     List<CRMEntitet> EntityList = new List<CRMEntitet>();
                     OracleCommand cmd = new OracleCommand(job.SQL, con);
@@ -108,77 +64,56 @@ namespace ModulusCrmSync
                         EntityLookupFieldValue = dr["id"].ToString();
                         QueryByAttribute q_readEntity = new QueryByAttribute(job.EntityName)
                         {
-                            ColumnSet = new ColumnSet(new string[] { job.EntityLookupField, job.EntityUpdateField, "ak_alder" })
+                            ColumnSet = new ColumnSet(new string[] { job.EntityLookupField, job.EntityUpdateField })
                         };
                         q_readEntity.Attributes.Add(job.EntityLookupField);
                         q_readEntity.Values.Add(EntityLookupFieldValue);
                         Entity _entity = service.RetrieveMultiple(q_readEntity).Entities.FirstOrDefault();
-
-
-
-
                         Console.WriteLine(attributeResponse.AttributeMetadata.AttributeType);
 
-
-                        //foreach (object attribute in AccountEntity.Attributes)
-                        //{
-                        //    AttributeMetadata a = (AttributeMetadata)attribute;
-                        //    Console.WriteLine(a);
-
-                        //}
-                        var key = attributeResponse.AttributeMetadata.AttributeType.Value.ToString();
-
-                        //Type type = Type.GetType(attributeResponse.AttributeMetadata.AttributeType.Value.ToString()); //target type
-                        //object o = Activator.CreateInstance(type); // an instance of target type
-                        //YourType your = (YourType)o;
-
-
-                        //if (attributeResponse.AttributeMetadata.AttributeType.Value.ToString()=="Boolean")
-                        //{
-
-                        //    Cast(dr["vaerdi"],);
-                        //}
-
-
-
-                        //type = _attributeTypeMapping[key];
-                        //Type TYP = (Type)attributeResponse.AttributeMetadata.AttributeType.Value;
-
-                        //_entity.Attributes[job.EntityUpdateField] = Cast(dr["vaerdi"], (Type)attributeResponse.AttributeMetadata.AttributeType.Value);
                         Type TYP = Type.GetType("System.String");
+
+                        QueryByAttribute q_contact = new QueryByAttribute("contact");
+                        q_contact.Attributes.Add("ak_modulusid");
+                        q_contact.Values.Add(EntityLookupFieldValue);
+                        Entity _contact = service.RetrieveMultiple(q_contact).Entities.FirstOrDefault();
+
                         string type = attributeResponse.AttributeMetadata.AttributeType.Value.ToString();
-                        if (type == "Boolean")
+                        if (type == "Integer")
+                            type = "Int32";
+
+                        //Hvis der er tale om lookup fields i CRM, dvs. opslag til andre entiteter
+                        if (type == "Lookup")
                         {
-                            TYP = Type.GetType("System.Boolean");
+                            // Henter lookup værdien
+                            QueryByAttribute q_readlookup = new QueryByAttribute(job.EntityUpdateField)
+                            {
+                                ColumnSet = new ColumnSet()
+                            };
+                            q_readlookup.Attributes.Add(job.LookupEntity);
+                            q_readlookup.Values.Add(dr["vaerdi"].ToString());                            
+                            Entity read_entity = service.RetrieveMultiple(q_readlookup).Entities.FirstOrDefault();
+                            _entity.Attributes[job.EntityUpdateField] = new EntityReference(job.EntityUpdateField, read_entity.Id);
                         }
-                        else if (type == "Decimal")
+                        else
                         {
-                            TYP = Type.GetType("System.Decimal");
-                        }                        
-
-                        Cast(dr["vaerdi"], TYP);
-
-                        _entity.Attributes[job.EntityUpdateField] = Cast(dr["vaerdi"], TYP);
-                        //(_entity.Attributes[job.EntityUpdateField]).GetType();
-                        //if (TYP.Name == "Boolean")
-                        //{
-                        //    _entity.Attributes[job.EntityUpdateField] = true;
-
-                        //}
-                        //else
-                        //{
-                        //    _entity.Attributes[job.EntityUpdateField] = Cast(dr["vaerdi"], TYP);
-                        //}
+                            TYP = Type.GetType("System." + type);
+                            Cast(dr["vaerdi"], TYP);
+                            if (_entity != null)
+                                _entity.Attributes[job.EntityUpdateField] = Cast(dr["vaerdi"], TYP);
+                        }
                         
+                        if (_entity != null)
+                        {                            
                             service.Update(_entity);
+                        }
                     }
+                    OracleCommand oracleCommand = con.CreateCommand();
+                    oracleCommand.CommandType = System.Data.CommandType.Text;
+                    oracleCommand.CommandText = "update kundedlfa.crmsync set sidste_sync=sysdate where crm_sync_id=" + job.SyncJobID;
+                    oracleCommand.ExecuteNonQuery();
                 }
             }
-        }
-
-        private static void Cast(object v, AttributeTypeCode key)
-        {
-            throw new NotImplementedException();
         }
     }
 }
